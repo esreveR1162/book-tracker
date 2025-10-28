@@ -2,8 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <iomanip>
-#include <algorithm> 
-#include <string> 
+
 
 using namespace std;
 
@@ -22,17 +21,28 @@ struct Book
 Book books[MAX_NUM_BOOKS];
 int cnt = 0;
 
-void SaveFile(const char *filename, Book NewBook){
+void Replace(char* str, char aim, char repTo) {
+    for(int i = 0; str[i] != '\0'; i++) {
+        if(str[i] == aim) {
+            str[i] = repTo;
+        }
+    }
+}
+
+void SaveFile(const char *filename, Book NewBook) {
     ofstream fout(filename, ios::app);
     if (!fout){
         cout << "Невозможно сохранить файл" << endl;
         return;
     }
 
-    string name = NewBook.name;
-    string author = NewBook.author;
-    replace(name.begin(), name.end(), ' ', '_');
-    replace(author.begin(), author.end(), ' ', '_');
+    char name[MAX_LENGTH_NAME];
+    char author[MAX_LENGTH_AUTHOR];
+    strcpy(name, NewBook.name);
+    strcpy(author, NewBook.author);
+    
+    Replace(name, ' ', '_');
+    Replace(author, ' ', '_');
     
     fout << name << " " << author << " " << NewBook.data << " " << NewBook.score << endl;
     fout.close();
@@ -44,16 +54,18 @@ void LoadFile(const char *filename){
         return;
     }
 
-    string name, author;
-    while (fin >> name >> author >> books[cnt].data >> books[cnt].score) {
-        replace(name.begin(), name.end(), '_', ' ');
-        replace(author.begin(), author.end(), '_', ' ');
-        
-        strcpy(books[cnt].name, name.c_str());
-        strcpy(books[cnt].author, author.c_str());
-        
-        cnt++;
-    }
+char name[MAX_LENGTH_NAME];
+char author[MAX_LENGTH_AUTHOR];
+
+while (fin >> name >> author >> books[cnt].data >> books[cnt].score) {
+    Replace(name, '_', ' ');
+    Replace(author, '_', ' ');
+    
+    strcpy(books[cnt].name, name);
+    strcpy(books[cnt].author, author);
+    
+    cnt++;
+}
     fin.close();
 }
 
